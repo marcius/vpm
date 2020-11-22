@@ -1,0 +1,43 @@
+{
+  "mongodb": "mongodb://localhost:27017/api",
+  "from_email": "no-reply@test.com",
+  "client_url": "http://localhost:8081",
+  "api_url": "http://localhost:3030/",
+  "smtp_host": "localhost",  //smtp-dev docker
+  "smtp_user": "update_to_aws_smtp_user",
+  "smtp_pw": "update_to_aws_smtp_pw",
+  "host": "localhost",
+  "port": 3030,
+  "public": "../public/",
+  "paginate": {
+    "default": 10,
+    "max": 50
+  },
+  "authentication": {
+    "entity": "user",
+    "service": "users",
+    "secret": "supersecret",
+    "authStrategies": ["jwt", "local"],
+    "jwtOptions": {
+      "header": {
+        "typ": "access"
+      },
+      "audience": "https://yourdomain.com",
+      "issuer": "feathers",
+      "algorithm": "HS256",
+      "expiresIn": "1d"
+    },
+    "local": {
+      "usernameField": "email",
+      "passwordField": "password"
+    },
+    "oauth": {
+      "redirect": "/",
+      "google": {
+        "key": "<google oauth key>",
+        "secret": "<google oauth secret>",
+        "scope": ["email", "profile", "openid"]
+      }
+    }
+  }
+}
