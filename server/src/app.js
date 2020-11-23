@@ -18,6 +18,7 @@ const channels = require('./channels');
 const authentication = require('./authentication');
 
 const mongoose = require('./mongoose');
+const sequelize = require('./sequelize');
 
 const app = express(feathers());
 
@@ -25,9 +26,6 @@ const app = express(feathers());
 app.configure(configuration());
 
 const config = require('config');
-//console.log(config.get('mongodb'));
-//console.log(config.get());
-//console.log(config.get('host'));
 
 // Enable security, CORS, compression, favicon and body parsing
 const whitelist = [app.get('client_url')] || [process.env.client_url];
@@ -63,6 +61,8 @@ app.configure(socketio());
 
 app.configure(mongoose);
 
+app.configure(sequelize);
+
 // Configure other middleware (see `middleware/index.js`)
 app.configure(middleware);
 app.configure(authentication);
@@ -71,10 +71,29 @@ app.configure(services);
 // Set up event channels (see channels.js)
 app.configure(channels);
 
+/* MM
+app.use('/messages', service({
+  Model: Message,
+  paginate: {
+    default: 2,
+    max: 4
+  }
+}));
+MM */
+
 // Configure a middleware for 404s and the error handler
 app.use(express.notFound());
 app.use(express.errorHandler({ logger }));
 
 app.hooks(appHooks);
+
+/* MM
+Message.sync({ force: true }).then(() => {
+  // Create a dummy Message
+  app.service('messages').create({
+    text: 'Message created on server'
+  }).then(message => console.log('Created message', message));
+});
+MM */
 
 module.exports = app;
