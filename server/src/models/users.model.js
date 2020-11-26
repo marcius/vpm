@@ -1,47 +1,112 @@
-// users-model.js - A mongoose model
-//
-// See http://mongoosejs.com/docs/models.html
+// See http://docs.sequelizejs.com/en/latest/docs/models-definition/
 // for more of what you can do here.
+const Sequelize = require('sequelize');
+const DataTypes = Sequelize.DataTypes;
+
 module.exports = function (app) {
-  const modelName = 'users';
-  const mongooseClient = app.get('mongooseClient');
-  const schema = new mongooseClient.Schema(
-    {
-      email: { type: String, unique: true, lowercase: true },
-      password: { type: String },
-      firstname: { type: String },
-      lastname: { type: String },
-      company: { type: String },
-      department: { type: String },
-      title: { type: String },
-      city: { type: String },
-      permissions: { type: Array, default: ['guest'] },
-      phone: { type: String },
-      passwordReset: { type: String },
-      passwordResetToken: { type: String },
-      lastLoggedIn: { type: Date },
-      team: { type: 'ObjectId', ref: 'Teams' },
-      googleId: { type: String },
-      isVerified: { type: Boolean },
-      verifyToken: { type: String },
-      verifyShortToken: { type: String },
-      verifyLongToken: { type: String },
-      verifyExpires: { type: Date },
-      verifyChanges: { type: Object },
-      resetToken: { type: String },
-      resetExpires: { type: Date },
+  const sequelizeClient = app.get('sequelizeClient');
+  const users = sequelizeClient.define('utenti', {
+    id: {
+      type: Sequelize.INTEGER,
+      primaryKey: true,
+      autoIncrement: true
     },
-    {
-      timestamps: true,
+    email: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    password: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    first_name: {
+     type: Sequelize.STRING
+    },
+    last_name: {
+      type: Sequelize.STRING
+    },
+    phone: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
+    dialablePhone: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
+    preferredComm: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
+    isInvitation: {
+      type: DataTypes.INTEGER,
+      allowNull: true
+    },
+    isVerified: {
+      type: DataTypes.INTEGER,
+      allowNull: true
+    },
+    verifyExpires: {
+      type: DataTypes.DATE
+    },
+    verifyToken: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
+    verifyShortToken: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
+    verifyChanges: {
+      type: DataTypes.STRING,
+      get() {
+          return JSON.parse(this.getDataValue('verifyChanges'));
+      },
+      set(val) {
+          this.setDataValue('verifyChanges', JSON.stringify(val));
+      }
+    },
+    resetExpires: {
+      type: DataTypes.DATE
+    },
+    resetToken: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
+    resetShortToken: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
+    mfaExpires: {
+      type: DataTypes.DATE
+    },
+    mfaShortToken: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
+    passwordHistory: {
+      type: DataTypes.STRING
+    },
+  }, {
+    hooks: {
+      beforeCount(options) {
+        options.raw = true;
+      }
     }
-  );
+  }, {
+    tableName: 'utenti',
+    timestamps: false,
+    hooks: {
+      beforeCount(options) {
+        options.raw = true;
+      }
+    }
+  });
 
-  schema.index({ email: 1, type: -1 }); // schema level
+  // eslint-disable-next-line no-unused-vars
+  users.associate = function (models) {
+    // Define associations here
+    // See http://docs.sequelizejs.com/en/latest/docs/associations/
+  };
 
-  // This is necessary to avoid model compilation errors in watch mode
-  // see https://mongoosejs.com/docs/api/connection.html#connection_Connection-deleteModel
-  if (mongooseClient.modelNames().includes(modelName)) {
-    mongooseClient.deleteModel(modelName);
-  }
-  return mongooseClient.model(modelName, schema);
+  return users;
 };

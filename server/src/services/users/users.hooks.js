@@ -84,7 +84,7 @@ module.exports = {
     find: [authenticate('jwt')],
     get: [authenticate('jwt')],
     create: [
-      validate.mongoose(schema, joiOptions),
+      //validate.mongoose(schema, joiOptions),
       hashPassword('password'),
       verifyHooks.addVerification(),
     ],
@@ -110,14 +110,14 @@ module.exports = {
             field: 'permissions',
             error: false,
           }),
-          validate.mongoose(adminUpdateSchema, joiOptions)
+          //validate.mongoose(adminUpdateSchema, joiOptions)
         ),
         iff((context) => !context.params.permitted, [
           setField({
             from: 'params.user._id',
             as: 'params.query._id',
           }),
-          validate.mongoose(updateSchema, joiOptions),
+          //validate.mongoose(updateSchema, joiOptions),
         ]),
         hashPassword('password')
       ),
@@ -144,14 +144,14 @@ module.exports = {
             field: 'permissions',
             error: false,
           }),
-          validate.mongoose(adminUpdateSchema, joiOptions)
+          //validate.mongoose(adminUpdateSchema, joiOptions)
         ),
         iff((context) => !context.params.permitted, [
           setField({
             from: 'params.user._id',
             as: 'params.query._id',
           }),
-          validate.mongoose(updateSchema, joiOptions),
+          //validate.mongoose(updateSchema, joiOptions),
         ]),
         hashPassword('password')
       ),
